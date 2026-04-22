@@ -114,14 +114,14 @@ body {
 }
 
 .option-btn.correct-pulse {
-  background: #10b981 !important;
-  border-color: #059669 !important;
+  background: #d1fae5 !important;
+  color: rgba(0, 0, 0, 0.621);
   animation: pulse 0.5s infinite alternate;
 }
 
 .option-btn.wrong-shake {
-  background: #f43f5e !important;
-  border-color: #e11d48 !important;
+  background: #f56d81 !important;
+  color: white;
   animation: shake 0.4s ease-in-out;
 }
 
@@ -131,23 +131,34 @@ body {
   }
 
   to {
-    transform: scale(1.02);
+    transform: scale(1.01);
   }
 }
 
 @keyframes shake {
 
-  0%,
-  100% {
+  0%,100% {
     transform: translateX(0);
   }
 
   25% {
-    transform: translateX(-5px);
+    transform: translateX(-1px);
   }
 
   75% {
-    transform: translateX(5px);
+    transform: translateX(1px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

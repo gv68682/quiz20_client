@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './index.css';
 
-const API_BASE = 'http://localhost:5005/api';
+
+// const API_BASE = process.env.API_BASE
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+const SERVER_PORT = import.meta.env.VITE_SERVER_PORT;
 
 function App() {
   const [view, setView] = useState('home');
@@ -18,7 +21,7 @@ function App() {
     setCategory(cat);
     setDifficulty(diff);
     try {
-      const res = await axios.get(`${API_BASE}/questions/random`, {
+      const res = await axios.get(`${SERVER_URL}/api/questions/random`, {
         params: { category: cat, difficulty: diff, limit: 20 }
       });
       if (res.data.length === 0) {
@@ -33,7 +36,7 @@ function App() {
       setView('quiz');
     } catch (err) {
       console.error(err);
-      alert("Failed to fetch questions. Is the server running on port 5005?");
+      alert(`Failed to fetch questions. Is the server running on port ${SERVER_PORT}`);
     }
   };
 
@@ -112,17 +115,31 @@ function App() {
           })}
         </div>
 
-        {showFeedback && (
+       {showFeedback && (
           <div style={{ marginTop: '2rem', textAlign: 'center', animation: 'fadeIn 0.5s' }}>
+            
             <p style={{
               fontSize: '1.2rem',
-              fontWeight: 'bold',
-              color: answers[currentIdx] === q.correctAnswer ? '#10b981' : '#f43f5e'
+              fontWeight: 'normal',
+              color: answers[currentIdx] === q.correctAnswer ? '#d1fae5' : '#f97488'
             }}>
               {answers[currentIdx] === q.correctAnswer ? "✓ Correct!" : "✗ Wrong!"}
             </p>
-            <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>{q.explanation}</p>
-            <button className="btn-primary" style={{ marginTop: '1.5rem' }} onClick={nextQuestion}>
+
+            <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              {q.explanation}
+            </p>
+            <button
+              className="btn-primary"
+              style={{
+                marginTop: '1.5rem',
+                width: '30%',
+                background: '#3776AB',
+                padding: '10px 6px',
+                fontWeight: 'normal'
+              }}
+              onClick={nextQuestion}
+            >
               {currentIdx === questions.length - 1 ? "View Results" : "Next Question"}
             </button>
           </div>
@@ -134,13 +151,16 @@ function App() {
   return (
     <div className="home-container">
       <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Quiz<span style={{ color: 'var(--primary)' }}>20</span></h1>
+        <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Quiz<span style={{ color: '#3776AB' }}>20</span></h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>Master Python & AI with 20-question intense challenges</p>
       </header>
 
       <main className="grid-cols">
         <div className="glass-card category-section">
-          <div style={{ fontSize: '4rem' }}>🐍</div>
+          <div style={{ display: 'flex', width: '56px', height: '28px' }}>
+            <div style={{ flex: 1, background: '#3776AB' }} />
+            <div style={{ flex: 1, background: '#FFD43B' }} />
+          </div>
           <h2>Python Challenge</h2>
           <p className="text-center" style={{ color: 'var(--text-muted)', textAlign: 'center' }}>Master everything from basic syntax to advanced decorators.</p>
           <div className="level-buttons">
@@ -148,13 +168,13 @@ function App() {
             <button className="btn-secondary" onClick={() => startQuiz('Python', 'Intermediate')}>Intermediate</button>
             <button className="btn-secondary" onClick={() => startQuiz('Python', 'Advanced')}>Advanced</button>
           </div>
-          <button className="btn-primary" style={{ width: '100%' }} onClick={() => startQuiz('Python', 'Beginner')}>
-            Generate Random Python Quiz
+          <button className="btn-primary" style={{ width: '45%', background: '#3776AB', padding: '6px 12px', fontWeight: 'normal' }} onClick={() => startQuiz('Python', 'Beginner')}>
+            Generate Python Quiz
           </button>
         </div>
 
         <div className="glass-card category-section">
-          <div style={{ fontSize: '4rem' }}>🤖</div>
+          <div style={{ fontSize: '40px', width: '56px', height: '28px', color: '#FFD43B' }}>⚡</div>
           <h2>AI Challenge</h2>
           <p className="text-center" style={{ color: 'var(--text-muted)', textAlign: 'center' }}>Deep dive into ML, Transformers, and Generative AI.</p>
           <div className="level-buttons">
@@ -162,7 +182,7 @@ function App() {
             <button className="btn-secondary" onClick={() => startQuiz('AI', 'Intermediate')}>Intermediate</button>
             <button className="btn-secondary" onClick={() => startQuiz('AI', 'Advanced')}>Advanced</button>
           </div>
-          <button className="btn-primary" style={{ width: '100%' }} onClick={() => startQuiz('AI', 'Beginner')}>
+          <button className="btn-primary" style={{ width: '45%', background: '#3776AB',padding: '6px 12px', fontWeight: 'normal' }} onClick={() => startQuiz('AI', 'Beginner')}>
             Generate AI Quiz
           </button>
         </div>
