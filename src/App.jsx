@@ -188,19 +188,41 @@ function App() {
     return (
       <div className="question-container glass-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <button
-            onClick={goHome}
-            style={{
-              background: 'transparent',
-              border: '1px solid rgba(255,255,255,0.2)',
-              color: '#fff',
-              padding: '6px 10px',
-              borderRadius: '8px',
-              cursor: 'pointer'
-            }}
-          >
-            ← Back
-          </button>
+          <div>
+            <button
+              onClick={() => setCurrentIdx(currentIdx - 1)}
+              disabled={currentIdx === 0}
+              style={{
+                background: 'transparent',
+                border: '1px solid rgba(255,255,255,0.2)',
+                color: '#fff',
+                padding: '6px 10px',
+                borderRadius: '8px',
+                cursor: currentIdx === 0 ? 'not-allowed' : 'pointer',
+                opacity: currentIdx === 0 ? 0.5 : 1
+              }}
+            >
+              ←
+            </button>
+            <button
+              onClick={() => setCurrentIdx(currentIdx + 1)}
+              disabled={currentIdx === questions.length - 1}
+              style={{
+                background: 'transparent',
+                border: '1px solid rgba(255,255,255,0.2)',
+                color: '#fff',
+                padding: '6px 10px',
+                borderRadius: '8px',
+                cursor:
+                  currentIdx === questions.length - 1
+                    ? 'not-allowed'
+                    : 'pointer',
+                opacity: currentIdx === questions.length - 1 ? 0.5 : 1
+              }}
+            >
+              →
+            </button>
+          </div>
           <span style={{ color: 'var(--text-muted)' }}>
             Question {currentIdx + 1} / {questions.length}
           </span>
@@ -214,9 +236,14 @@ function App() {
             }}
           >X</button>
         </div>
-        <span style={{ color: 'var(--text-muted)' }}>Question {currentIdx + 1} / {questions.length}</span>
-        <span>{category} - {difficulty} {category === 'More AI' ? `(${q.section || moreAiTopic})` : ''}</span>
+        <span style={{ color: 'var(--text-muted)', marginRight: '8px' }}>
+          Question {currentIdx + 1} / {questions.length}
+        </span>
 
+        <span style={{ color: 'var(--text-muted)' }}>
+          {category} - {difficulty}{' '}
+          {category === 'More AI' ? `(${q.section || moreAiTopic})` : ''}
+        </span>
         <h3 style={{ marginBottom: '2rem' }}>{q.text}</h3>
 
         <div className="options" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
