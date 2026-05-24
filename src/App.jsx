@@ -18,6 +18,7 @@ function App() {
   // New states for More AI
   const [moreAiTopic, setMoreAiTopic] = useState('All');
   const [shortAnswerInput, setShortAnswerInput] = useState('');
+  const [shortAnswerCorrect, setShortAnswerCorrect] = useState(false);
 
   const moreAiTopics = ['All', 'ML', 'Deep Learning', 'NLP', 'LangChain', 'RAG', 'Agents', 'MCP'];
 
@@ -40,6 +41,7 @@ function App() {
     setShowFeedback(false);
     setScoreCount(0);
     setShortAnswerInput('');
+    setShortAnswerCorrect(false);
   };
 
   const startQuiz = async (cat, diff) => {
@@ -109,6 +111,7 @@ function App() {
       setShowFeedback(false);
       setScoreCount(0);
       setShortAnswerInput('');
+      setShortAnswerCorrect(false);
       setView('quiz');
     } catch (err) {
       console.error(err);
@@ -117,17 +120,26 @@ function App() {
     }
   };
 
-  const handleAnswer = (val) => {
+  const handleAnswer = async (val) => {
     if (showFeedback) return;
 
     const q = questions[currentIdx];
     let isCorrect = false;
 
     if (q.type === 'Short Answer') {
-      const userAns = val.trim().toLowerCase();
-      const actualAns = q.correctAnswerStr.trim().toLowerCase();
-      isCorrect = userAns === actualAns;
       setAnswers({ ...answers, [currentIdx]: val });
+      try {
+        const res = await axios.post(`${SERVER_URL}/api/questions/more-ai/grade-short-answer`, {
+          userAnswer: val,
+          actualAnswer: q.correctAnswerStr
+        });
+        isCorrect = res.data.correct;
+        setShortAnswerCorrect(isCorrect);
+      } catch (err) {
+        console.error('Grading error:', err);
+        // Fallback to exact match if API call fails
+        isCorrect = val.trim().toLowerCase() === q.correctAnswerStr.trim().toLowerCase();
+      }
     } else {
       isCorrect = val === q.correctAnswer;
       setAnswers({ ...answers, [currentIdx]: val });
@@ -142,6 +154,7 @@ function App() {
       setCurrentIdx(prev => prev + 1);
       setShowFeedback(false);
       setShortAnswerInput('');
+      setShortAnswerCorrect(false);
     } else {
       setView('results');
     }
@@ -176,10 +189,9 @@ function App() {
     let isCorrectAnswered = false;
 
     if (showFeedback) {
+      // For Short Answer, correctness is stored in a state set by the API response
       if (q.type === 'Short Answer') {
-        const userAns = (answers[currentIdx] || '').trim().toLowerCase();
-        const actualAns = q.correctAnswerStr.trim().toLowerCase();
-        isCorrectAnswered = userAns === actualAns;
+        isCorrectAnswered = shortAnswerCorrect;
       } else {
         isCorrectAnswered = answers[currentIdx] === q.correctAnswer;
       }
